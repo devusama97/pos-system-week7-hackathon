@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Button, Divider, IconButton, TextField, List, ListItem, Avatar } from '@mui/material';
-import { DeleteOutline } from '@mui/icons-material';
+import { Box, Typography, Button, Divider, IconButton, TextField, List, ListItem, Avatar, Drawer, useMediaQuery, useTheme } from '@mui/material';
+import { DeleteOutline, Close } from '@mui/icons-material'; // Added Close icon
 import { COLORS } from '../theme/colors';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -12,31 +12,39 @@ interface OrderSidebarProps {
     onContinue: () => void;
     orderType: string;
     setOrderType: (type: string) => void;
+    open?: boolean;
+    onClose?: () => void;
 }
 
-export default function OrderSidebar({ onContinue, orderType, setOrderType }: OrderSidebarProps) {
+export default function OrderSidebar({ onContinue, orderType, setOrderType, open, onClose }: OrderSidebarProps) {
     const dispatch = useDispatch();
     const cartItems = useSelector((state: RootState) => state.cart.items);
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up('lg')); // Large screens only
 
     const subTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-    return (
+    const content = (
         <Box
             sx={{
                 width: '400px',
-                height: '100vh',
+                height: '100%',
                 backgroundColor: COLORS.surface,
-                position: 'fixed',
-                right: 0,
-                top: 0,
                 p: 3,
                 pt: 4,
                 display: 'flex',
                 flexDirection: 'column',
-                borderLeft: `1px solid ${COLORS.divider}`,
-                zIndex: 100,
             }}
         >
+            {/* Mobile Close Button */}
+            {!isDesktop && (
+                <IconButton
+                    onClick={onClose}
+                    sx={{ position: 'absolute', top: 10, right: 10, color: '#FFF' }}
+                >
+                    <Close />
+                </IconButton>
+            )}
             <Typography variant="h2" sx={{ mb: 3, color: '#FFF' }}>Orders #{(Math.random() * 100000).toFixed(0)}</Typography>
 
             <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
@@ -171,6 +179,38 @@ export default function OrderSidebar({ onContinue, orderType, setOrderType }: Or
                     Continue to Payment
                 </Button>
             </Box>
+        </Box>
+    );
+
+    return (
+        <Box component="nav" sx={{ width: { lg: 400 }, flexShrink: { lg: 0 } }}>
+            {/* Mobile/Tablet Drawer */}
+            <Drawer
+                variant="temporary"
+                open={open}
+                onClose={onClose}
+                ModalProps={{ keepMounted: true }}
+                sx={{
+                    display: { xs: 'block', lg: 'none' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 400, backgroundColor: COLORS.surface, borderLeft: `1px solid ${COLORS.divider}` },
+                }}
+                anchor="right"
+            >
+                {content}
+            </Drawer>
+
+            {/* Desktop Permanent Drawer */}
+            <Drawer
+                variant="permanent"
+                sx={{
+                    display: { xs: 'none', lg: 'block' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 400, backgroundColor: COLORS.surface, borderLeft: `1px solid ${COLORS.divider}` },
+                }}
+                open
+                anchor="right"
+            >
+                {content}
+            </Drawer>
         </Box>
     );
 }

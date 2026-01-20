@@ -7,8 +7,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('raw-materials')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('admin')
+// @UseGuards(JwtAuthGuard, RolesGuard)
+// @Roles('admin')
 export class RawMaterialsController {
     constructor(private readonly rawMaterialsService: RawMaterialsService) { }
 

@@ -50,14 +50,14 @@ export default function PaymentView({ onBack, defaultOrderType = 'Dine In' }: { 
             onClose={onBack}
             PaperProps={{
                 sx: {
-                    width: '1050px',
+                    width: { xs: '100vw', md: '1050px' },
                     backgroundColor: '#1F1D2B',
                     backgroundImage: 'none',
                     borderLeft: `1px solid ${COLORS.divider}`,
                 }
             }}
         >
-            <Box sx={{ display: 'flex', height: '100%' }}>
+            <Box sx={{ display: 'flex', height: '100%', flexDirection: { xs: 'column-reverse', md: 'row' }, overflowY: { xs: 'auto', md: 'hidden' } }}>
                 {/* 1. Confirmation Column... (unchanged) */}
                 <Box sx={{
                     flex: 1,

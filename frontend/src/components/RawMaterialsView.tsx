@@ -106,15 +106,23 @@ export default function RawMaterialsView() {
     return (
         <Box sx={{
             flexGrow: 1,
+            width: '100%',
             backgroundColor: COLORS.surface,
             borderRadius: '8px',
-            p: 3,
+            p: { xs: 2, md: 3 },
             display: 'flex',
             flexDirection: 'column',
             minHeight: '600px'
         }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h2" sx={{ color: '#FFF', fontSize: '20px', fontWeight: 600 }}>Raw Materials Inventory</Typography>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                mb: 3,
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: 2, sm: 0 }
+            }}>
+                <Typography variant="h2" sx={{ color: '#FFF', fontSize: { xs: '18px', md: '20px' }, fontWeight: 600 }}>Raw Materials Inventory</Typography>
                 <Button
                     variant="contained"
                     startIcon={<Add />}
@@ -125,6 +133,7 @@ export default function RawMaterialsView() {
                         borderRadius: '8px',
                         textTransform: 'none',
                         px: 3,
+                        width: { xs: '100%', sm: 'auto' },
                         '&:hover': { backgroundColor: '#D6635D' }
                     }}
                 >
@@ -132,7 +141,11 @@ export default function RawMaterialsView() {
                 </Button>
             </Box>
 
-            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+            <TableContainer component={Paper} sx={{
+                backgroundColor: 'transparent',
+                boxShadow: 'none',
+                overflowX: 'auto'
+            }}>
                 <Table sx={{ minWidth: 650 }}>
                     <TableHead>
                         <TableRow sx={{ '& th': { borderBottom: `2px solid ${COLORS.divider}`, color: COLORS.text.secondary, fontWeight: 600 } }}>

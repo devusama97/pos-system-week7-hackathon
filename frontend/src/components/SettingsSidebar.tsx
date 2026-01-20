@@ -31,7 +31,7 @@ export default function SettingsSidebar({ activeTab, setActiveTab }: SettingsSid
     return (
         <Box
             sx={{
-                width: '350px',
+                width: { xs: '100%', md: '350px' },
                 backgroundColor: COLORS.surface,
                 borderRadius: '8px',
                 overflow: 'hidden',

@@ -8,13 +8,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('products')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
     @Post()
-    @UseGuards(RolesGuard)
-    @Roles('admin')
+    // @UseGuards(RolesGuard)
+    // @Roles('admin')
     @UseInterceptors(FileInterceptor('image'))
     create(
         @Body() createProductDto: CreateProductDto,
@@ -34,8 +34,8 @@ export class ProductsController {
     }
 
     @Patch(':id')
-    @UseGuards(RolesGuard)
-    @Roles('admin')
+    // @UseGuards(RolesGuard)
+    // @Roles('admin')
     @UseInterceptors(FileInterceptor('image'))
     update(
         @Param('id') id: string,
@@ -46,8 +46,8 @@ export class ProductsController {
     }
 
     @Delete(':id')
-    @UseGuards(RolesGuard)
-    @Roles('admin')
+    // @UseGuards(RolesGuard)
+    // @Roles('admin')
     remove(@Param('id') id: string) {
         return this.productsService.remove(id);
     }

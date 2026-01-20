@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Typography, Tabs, Tab, Grid, Paper, Button, IconButton, Divider } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Grid, Paper, Button, IconButton, Divider, Select, MenuItem, FormControl } from '@mui/material';
 import { Add, EditOutlined, Tune, DeleteOutline } from '@mui/icons-material';
 import { COLORS } from '../theme/colors';
 import { useGetProductsQuery, useDeleteProductMutation } from '../store/apis/productsApi';
@@ -39,17 +39,25 @@ export default function ProductsManagementView() {
     return (
         <Box sx={{
             flexGrow: 1,
+            width: '100%',
             backgroundColor: COLORS.surface,
             borderRadius: '8px',
-            p: 3,
+            p: { xs: 2, md: 3 },
             display: 'flex',
             flexDirection: 'column',
             height: 'fit-content',
             minHeight: '600px'
         }}>
             {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="h2" sx={{ color: '#FFF', fontSize: '20px', fontWeight: 600 }}>Products Management</Typography>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                mb: 1,
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: 2, sm: 0 }
+            }}>
+                <Typography variant="h2" sx={{ color: '#FFF', fontSize: { xs: '18px', md: '20px' }, fontWeight: 600 }}>Products Management</Typography>
                 <Button
                     variant="outlined"
                     startIcon={<Tune fontSize="small" />}
@@ -58,9 +66,10 @@ export default function ProductsManagementView() {
                         borderColor: COLORS.divider,
                         borderRadius: '8px',
                         textTransform: 'none',
-                        px: 2,
-                        fontSize: '14px',
-                        height: '40px',
+                        px: { xs: 1.5, sm: 2 },
+                        fontSize: { xs: '12px', sm: '14px' },
+                        height: { xs: '36px', sm: '40px' },
+                        width: { xs: '100%', sm: 'auto' },
                         '&:hover': { borderColor: COLORS.primary }
                     }}
                 >
@@ -68,18 +77,72 @@ export default function ProductsManagementView() {
                 </Button>
             </Box>
 
-            {/* Category Tabs */}
+            {/* Category Selection - Mobile/Tablet Dropdown */}
+            <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
+                <FormControl fullWidth>
+                    <Select
+                        value={activeTab}
+                        onChange={(e) => setActiveTab(e.target.value as number)}
+                        sx={{
+                            color: '#FFF',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            backgroundColor: COLORS.background,
+                            borderRadius: '8px',
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: COLORS.divider,
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                borderColor: COLORS.primary,
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderColor: COLORS.primary,
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#FFF',
+                            },
+                        }}
+                    >
+                        {categories.map((cat, index) => (
+                            <MenuItem
+                                key={index}
+                                value={index}
+                                sx={{
+                                    color: '#FFF',
+                                    backgroundColor: COLORS.surface,
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(234, 115, 109, 0.1)',
+                                    },
+                                    '&.Mui-selected': {
+                                        backgroundColor: 'rgba(234, 115, 109, 0.2)',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(234, 115, 109, 0.3)',
+                                        },
+                                    },
+                                }}
+                            >
+                                {cat}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Box>
+
+            {/* Category Tabs - Desktop Only */}
             <Tabs
                 value={activeTab}
                 onChange={(_, newValue) => setActiveTab(newValue)}
+                variant="scrollable"
+                scrollButtons="auto"
                 sx={{
+                    display: { xs: 'none', md: 'flex' },
                     mb: 3,
                     minHeight: 'auto',
-                    '& .MuiTabs-flexContainer': { gap: 4 },
+                    '& .MuiTabs-flexContainer': { gap: { xs: 2, md: 4 } },
                     '& .MuiTab-root': {
                         color: '#FFF',
                         textTransform: 'none',
-                        fontSize: '14px',
+                        fontSize: { xs: '12px', md: '14px' },
                         fontWeight: 600,
                         minWidth: 'auto',
                         minHeight: 'auto',
@@ -87,7 +150,8 @@ export default function ProductsManagementView() {
                         pb: 1.5,
                         '&.Mui-selected': { color: COLORS.primary }
                     },
-                    '& .MuiTabs-indicator': { backgroundColor: COLORS.primary, height: '3px' }
+                    '& .MuiTabs-indicator': { backgroundColor: COLORS.primary, height: '3px' },
+                    '& .MuiTabs-scrollButtons': { color: '#FFF' }
                 }}
             >
                 {categories.map((cat, index) => (
@@ -101,8 +165,8 @@ export default function ProductsManagementView() {
             <Box sx={{
                 flexGrow: 1,
                 overflowY: 'auto',
-                maxHeight: '480px',
-                pr: 1
+                maxHeight: { xs: 'none', md: '480px' },
+                pr: { xs: 0, md: 1 }
             }}>
                 <Grid container spacing={3}>
                     {/* Add New Dish */}

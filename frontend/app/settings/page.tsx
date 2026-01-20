@@ -33,7 +33,12 @@ export default function SettingsPage() {
                     <Typography variant="h1" sx={{ color: '#FFF', fontSize: '28px', mb: 0.5 }}>Settings</Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
+                <Box sx={{
+                    display: 'flex',
+                    gap: 3,
+                    alignItems: 'flex-start',
+                    flexDirection: { xs: 'column', md: 'row' }
+                }}>
                     <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
                     {renderView()}
                 </Box>

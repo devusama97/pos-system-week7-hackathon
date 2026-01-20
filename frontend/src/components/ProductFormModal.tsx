@@ -122,26 +122,27 @@ export default function ProductFormModal({ open, onClose, editingProduct }: Prod
             onClose={onClose}
             maxWidth="sm"
             fullWidth
+            fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
             PaperProps={{
                 sx: {
                     backgroundColor: COLORS.surface,
                     color: '#FFF',
-                    borderRadius: '12px',
-                    p: 1,
+                    borderRadius: { xs: 0, sm: '12px' },
+                    p: { xs: 0, sm: 1 },
                     maxWidth: '700px'
                 }
             }}
         >
-            <DialogTitle sx={{ borderBottom: `1px solid ${COLORS.divider}`, pb: 2 }}>
-                <Typography component="div" variant="h6" sx={{ fontSize: '24px', fontWeight: 600 }}>
+            <DialogTitle sx={{ borderBottom: `1px solid ${COLORS.divider}`, pb: 2, px: { xs: 2, sm: 3 } }}>
+                <Typography component="div" variant="h6" sx={{ fontSize: { xs: '20px', sm: '24px' }, fontWeight: 600 }}>
                     {editingProduct ? 'Edit Product Details' : 'Add New Product'}
                 </Typography>
             </DialogTitle>
-            <DialogContent sx={{ mt: 3, px: 3 }}>
+            <DialogContent sx={{ mt: 3, px: { xs: 2, sm: 3 } }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {/* Basic Info */}
-                    <Grid container spacing={4}>
-                        <Grid size={{ xs: 7 }}>
+                    <Grid container spacing={{ xs: 3, sm: 4 }}>
+                        <Grid size={{ xs: 12, sm: 7 }}>
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                 <Box>
                                     <Typography variant="body2" sx={{ color: COLORS.text.secondary, mb: 1 }}>Product Name</Typography>
@@ -210,12 +211,12 @@ export default function ProductFormModal({ open, onClose, editingProduct }: Prod
                                 </Box>
                             </Box>
                         </Grid>
-                        <Grid size={{ xs: 5 }}>
+                        <Grid size={{ xs: 12, sm: 5 }}>
                             <Typography variant="body2" sx={{ color: COLORS.text.secondary, mb: 1 }}>Product Image</Typography>
                             <Box
                                 sx={{
                                     width: '100%',
-                                    height: '160px',
+                                    height: { xs: '200px', sm: '160px' },
                                     border: `1px dashed ${COLORS.divider}`,
                                     borderRadius: '12px',
                                     display: 'flex',
@@ -248,13 +249,21 @@ export default function ProductFormModal({ open, onClose, editingProduct }: Prod
 
                     {/* Recipe Builder */}
                     <Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 3,
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            gap: { xs: 2, sm: 0 }
+                        }}>
                             <Typography variant="h3" sx={{ fontSize: '18px', fontWeight: 600 }}>Recipe Composition</Typography>
                             <Button
                                 startIcon={<Add />}
                                 variant="outlined"
                                 size="small"
                                 onClick={handleAddRecipeItem}
+                                fullWidth={typeof window !== 'undefined' && window.innerWidth < 600}
                                 sx={{
                                     color: COLORS.primary,
                                     borderColor: COLORS.primary,
@@ -268,8 +277,13 @@ export default function ProductFormModal({ open, onClose, editingProduct }: Prod
 
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {formData.recipe.map((item, index) => (
-                                <Box key={index} sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
-                                    <Box sx={{ flexGrow: 1 }}>
+                                <Box key={index} sx={{
+                                    display: 'flex',
+                                    gap: { xs: 1.5, sm: 3 },
+                                    alignItems: 'flex-start',
+                                    flexDirection: { xs: 'column', sm: 'row' }
+                                }}>
+                                    <Box sx={{ flexGrow: 1, width: { xs: '100%', sm: 'auto' } }}>
                                         <Typography variant="caption" sx={{ color: COLORS.text.secondary, display: 'block', mb: 0.5 }}>Material</Typography>
                                         <TextField
                                             select
@@ -293,54 +307,68 @@ export default function ProductFormModal({ open, onClose, editingProduct }: Prod
                                             ))}
                                         </TextField>
                                     </Box>
-                                    <Box sx={{ width: '140px' }}>
-                                        <Typography variant="caption" sx={{ color: COLORS.text.secondary, display: 'block', mb: 0.5 }}>Qty</Typography>
-                                        <TextField
-                                            type="number"
-                                            size="small"
-                                            fullWidth
-                                            placeholder="0"
+                                    <Box sx={{ width: { xs: '100%', sm: '140px' }, display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Typography variant="caption" sx={{ color: COLORS.text.secondary, display: 'block', mb: 0.5 }}>Qty</Typography>
+                                            <TextField
+                                                type="number"
+                                                size="small"
+                                                fullWidth
+                                                placeholder="0"
+                                                sx={{
+                                                    '& input': { color: '#FFF' },
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                                                        '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.4)' },
+                                                        '&.Mui-focused fieldset': { borderColor: COLORS.primary }
+                                                    }
+                                                }}
+                                                value={item.quantity === 0 ? '' : item.quantity}
+                                                onFocus={(e) => {
+                                                    if (item.quantity === 0) {
+                                                        handleRecipeChange(index, 'quantity', '');
+                                                    } else {
+                                                        e.target.select();
+                                                    }
+                                                }}
+                                                onChange={(e) => handleRecipeChange(index, 'quantity', e.target.value === '' ? 0 : Number(e.target.value))}
+                                            />
+                                        </Box>
+                                        <IconButton
+                                            onClick={() => handleRemoveRecipeItem(index)}
                                             sx={{
-                                                '& input': { color: '#FFF' },
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                                                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.4)' },
-                                                    '&.Mui-focused fieldset': { borderColor: COLORS.primary }
-                                                }
+                                                color: COLORS.error,
+                                                '&:hover': { backgroundColor: 'rgba(255, 107, 107, 0.1)' }
                                             }}
-                                            value={item.quantity === 0 ? '' : item.quantity}
-                                            onFocus={(e) => {
-                                                if (item.quantity === 0) {
-                                                    handleRecipeChange(index, 'quantity', '');
-                                                } else {
-                                                    e.target.select();
-                                                }
-                                            }}
-                                            onChange={(e) => handleRecipeChange(index, 'quantity', e.target.value === '' ? 0 : Number(e.target.value))}
-                                        />
+                                        >
+                                            <DeleteOutline />
+                                        </IconButton>
                                     </Box>
-                                    <IconButton
-                                        onClick={() => handleRemoveRecipeItem(index)}
-                                        sx={{
-                                            color: COLORS.error,
-                                            mt: 3,
-                                            '&:hover': { backgroundColor: 'rgba(255, 107, 107, 0.1)' }
-                                        }}
-                                    >
-                                        <DeleteOutline />
-                                    </IconButton>
                                 </Box>
                             ))}
                         </Box>
                     </Box>
                 </Box>
             </DialogContent>
-            <DialogActions sx={{ p: 4, pt: 2, borderTop: `1px solid ${COLORS.divider}` }}>
-                <Button onClick={onClose} sx={{ color: COLORS.text.secondary, px: 3 }}>Cancel</Button>
+            <DialogActions sx={{
+                p: { xs: 2, sm: 4 },
+                pt: 2,
+                borderTop: `1px solid ${COLORS.divider}`,
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: 1, sm: 0 }
+            }}>
+                <Button
+                    onClick={onClose}
+                    fullWidth={typeof window !== 'undefined' && window.innerWidth < 600}
+                    sx={{ color: COLORS.text.secondary, px: 3 }}
+                >
+                    Cancel
+                </Button>
                 <Button
                     variant="contained"
                     size="large"
                     onClick={handleSubmit}
+                    fullWidth={typeof window !== 'undefined' && window.innerWidth < 600}
                     sx={{
                         backgroundColor: COLORS.primary,
                         px: 5,

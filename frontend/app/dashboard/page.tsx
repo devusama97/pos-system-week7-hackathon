@@ -72,24 +72,24 @@ export default function DashboardPage() {
 
     return (
         <MainLayout>
-            <Box sx={{ color: '#FFF' }}>
-                <Grid container spacing={4}>
+            <Box sx={{ color: '#FFF', width: '100%', maxWidth: '100vw', overflow: 'hidden' }}>
+                <Grid container spacing={{ xs: 2, md: 4 }}>
                     {/* Left Column */}
                     <Grid size={{ xs: 12, lg: 8 }}>
                         {/* Header */}
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="h1" sx={{ fontSize: '28px', mb: 0.5 }}>Dashboard</Typography>
+                        <Box sx={{ mb: { xs: 3, md: 4 } }}>
+                            <Typography variant="h1" sx={{ fontSize: { xs: '24px', md: '28px' }, mb: 0.5 }}>Dashboard</Typography>
                             <Typography variant="body2" sx={{ color: COLORS.text.secondary }}>{new Date().toDateString()}</Typography>
                         </Box>
 
-                        <Divider sx={{ borderBottom: `1px solid ${COLORS.divider}`, mb: 4 }} />
+                        <Divider sx={{ borderBottom: `1px solid ${COLORS.divider}`, mb: { xs: 3, md: 4 } }} />
 
                         {/* Stats Grid */}
-                        <Grid container spacing={3} sx={{ mb: 4 }}>
+                        <Grid container spacing={{ xs: 2, md: 3 }} sx={{ mb: { xs: 3, md: 4 } }}>
                             {statsCards.map((stat, index) => (
-                                <Grid key={index} size={{ xs: 12, md: 4 }}>
+                                <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
                                     <Paper sx={{
-                                        p: 3,
+                                        p: { xs: 2, md: 3 },
                                         backgroundColor: COLORS.surface,
                                         borderRadius: '8px',
                                         display: 'flex',
@@ -118,17 +118,17 @@ export default function DashboardPage() {
                                                 {stat.change} {stat.isUp ? <KeyboardArrowUp fontSize="small" /> : <KeyboardArrowDown fontSize="small" />}
                                             </Typography>
                                         </Box>
-                                        <Typography variant="h2" sx={{ mb: 0.5, fontSize: '24px', fontWeight: 600 }}>{stat.value}</Typography>
-                                        <Typography variant="body2" sx={{ color: COLORS.text.secondary }}>{stat.title}</Typography>
+                                        <Typography variant="h2" sx={{ mb: 0.5, fontSize: { xs: '20px', md: '24px' }, fontWeight: 600 }}>{stat.value}</Typography>
+                                        <Typography variant="body2" sx={{ color: COLORS.text.secondary, fontSize: { xs: '12px', md: '14px' } }}>{stat.title}</Typography>
                                     </Paper>
                                 </Grid>
                             ))}
                         </Grid>
 
                         {/* Order Report */}
-                        <Paper sx={{ p: 3, backgroundColor: COLORS.surface, borderRadius: '8px' }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                <Typography variant="h2" sx={{ fontSize: '20px' }}>Order Report</Typography>
+                        <Paper sx={{ p: { xs: 2, md: 3 }, backgroundColor: COLORS.surface, borderRadius: '8px' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+                                <Typography variant="h2" sx={{ fontSize: { xs: '18px', md: '20px' } }}>Order Report</Typography>
                                 <Button
                                     startIcon={<FilterList />}
                                     sx={{
@@ -136,7 +136,8 @@ export default function DashboardPage() {
                                         borderColor: COLORS.divider,
                                         textTransform: 'none',
                                         borderRadius: '8px',
-                                        px: 2
+                                        px: 2,
+                                        fontSize: { xs: '12px', sm: '14px' }
                                     }}
                                     variant="outlined"
                                 >
@@ -144,66 +145,68 @@ export default function DashboardPage() {
                                 </Button>
                             </Box>
 
-                            <TableContainer>
-                                <Table sx={{ minWidth: 600 }}>
-                                    <TableHead>
-                                        <TableRow sx={{
-                                            '& th': {
-                                                borderBottom: `2px solid ${COLORS.divider}`,
-                                                color: '#FFF',
-                                                fontWeight: 600,
-                                                pb: 2,
-                                                px: 1
-                                            }
-                                        }}>
-                                            <TableCell>Customer</TableCell>
-                                            <TableCell>Menu</TableCell>
-                                            <TableCell>Total Payment</TableCell>
-                                            <TableCell>Status</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {orders?.slice(0, 6).map((order: any, index: number) => (
-                                            <TableRow key={order._id || index} sx={{ '& td': { borderBottom: `1px solid ${COLORS.divider}`, py: 2, px: 1 } }}>
-                                                <TableCell sx={{ color: '#E0E6E9' }}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                        <Avatar sx={{ width: 32, height: 32, backgroundColor: COLORS.primary }}>
-                                                            {order.customerName?.[0] || 'C'}
-                                                        </Avatar>
-                                                        <Typography variant="body2" sx={{ fontSize: '14px' }}>{order.customerName || 'Walk-in Customer'}</Typography>
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell sx={{ color: '#E0E6E9', maxWidth: '200px' }}>
-                                                    <Typography variant="body2" sx={{ fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {order.items.map((i: any) => i.product?.name).join(', ')}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ color: '#E0E6E9' }}>
-                                                    <Typography variant="body2" sx={{ fontSize: '14px' }}>$ {(order.totalAmount || 0).toFixed(2)}</Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={order.status || 'Completed'}
-                                                        size="small"
-                                                        sx={{
-                                                            height: '24px',
-                                                            backgroundColor:
-                                                                (order.status || 'Completed') === 'Completed' ? 'rgba(80, 209, 170, 0.15)' :
-                                                                    'rgba(255, 181, 114, 0.15)',
-                                                            color:
-                                                                (order.status || 'Completed') === 'Completed' ? '#50D1AA' :
-                                                                    '#FFB572',
-                                                            fontWeight: 500,
-                                                            borderRadius: '30px',
-                                                            fontSize: '12px'
-                                                        }}
-                                                    />
-                                                </TableCell>
+                            <Box sx={{ overflowX: 'auto' }}>
+                                <TableContainer>
+                                    <Table sx={{ minWidth: 600 }}>
+                                        <TableHead>
+                                            <TableRow sx={{
+                                                '& th': {
+                                                    borderBottom: `2px solid ${COLORS.divider}`,
+                                                    color: '#FFF',
+                                                    fontWeight: 600,
+                                                    pb: 2,
+                                                    px: 1
+                                                }
+                                            }}>
+                                                <TableCell>Customer</TableCell>
+                                                <TableCell>Menu</TableCell>
+                                                <TableCell>Total Payment</TableCell>
+                                                <TableCell>Status</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {orders?.slice(0, 6).map((order: any, index: number) => (
+                                                <TableRow key={order._id || index} sx={{ '& td': { borderBottom: `1px solid ${COLORS.divider}`, py: 2, px: 1 } }}>
+                                                    <TableCell sx={{ color: '#E0E6E9' }}>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                            <Avatar sx={{ width: 32, height: 32, backgroundColor: COLORS.primary }}>
+                                                                {order.customerName?.[0] || 'C'}
+                                                            </Avatar>
+                                                            <Typography variant="body2" sx={{ fontSize: '14px' }}>{order.customerName || 'Walk-in Customer'}</Typography>
+                                                        </Box>
+                                                    </TableCell>
+                                                    <TableCell sx={{ color: '#E0E6E9', maxWidth: '200px' }}>
+                                                        <Typography variant="body2" sx={{ fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {order.items.map((i: any) => i.product?.name).join(', ')}
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell sx={{ color: '#E0E6E9' }}>
+                                                        <Typography variant="body2" sx={{ fontSize: '14px' }}>$ {(order.totalAmount || 0).toFixed(2)}</Typography>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            label={order.status || 'Completed'}
+                                                            size="small"
+                                                            sx={{
+                                                                height: '24px',
+                                                                backgroundColor:
+                                                                    (order.status || 'Completed') === 'Completed' ? 'rgba(80, 209, 170, 0.15)' :
+                                                                        'rgba(255, 181, 114, 0.15)',
+                                                                color:
+                                                                    (order.status || 'Completed') === 'Completed' ? '#50D1AA' :
+                                                                        '#FFB572',
+                                                                fontWeight: 500,
+                                                                borderRadius: '30px',
+                                                                fontSize: '12px'
+                                                            }}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Box>
                         </Paper>
                     </Grid>
 
