@@ -27,7 +27,7 @@ export default function OrderSidebar({ onContinue, orderType, setOrderType, open
     const content = (
         <Box
             sx={{
-                width: '400px',
+                width: '100%',
                 height: '100%',
                 backgroundColor: COLORS.surface,
                 p: 3,
@@ -192,7 +192,7 @@ export default function OrderSidebar({ onContinue, orderType, setOrderType, open
                 ModalProps={{ keepMounted: true }}
                 sx={{
                     display: { xs: 'block', lg: 'none' },
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 400, backgroundColor: COLORS.surface, borderLeft: `1px solid ${COLORS.divider}` },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: { xs: '100%', sm: 400 }, backgroundColor: COLORS.surface, borderLeft: `1px solid ${COLORS.divider}` },
                 }}
                 anchor="right"
             >

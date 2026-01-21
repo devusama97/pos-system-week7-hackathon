@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import * as mongoose from 'mongoose';
 
 export type RawMaterialDocument = RawMaterial & Document;
 
@@ -16,6 +17,16 @@ export class RawMaterial {
 
     @Prop({ default: 0 })
     minStockLevel: number;
+
+    // Soft delete fields
+    @Prop({ default: false })
+    isDeleted: boolean;
+
+    @Prop({ type: Date, default: null })
+    deletedAt: Date;
+
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
+    deletedBy: mongoose.Types.ObjectId;
 }
 
 export const RawMaterialSchema = SchemaFactory.createForClass(RawMaterial);

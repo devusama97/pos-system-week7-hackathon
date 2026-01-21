@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography, Box } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography, Box, Chip } from '@mui/material';
 import { COLORS } from '../theme/colors';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
@@ -12,9 +12,10 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const dispatch = useDispatch();
+    const isAvailable = product.availableQuantity > 0;
 
     const handleAddToCart = () => {
-        if (product.availableQuantity > 0) {
+        if (isAvailable) {
             dispatch(addToCart({
                 id: product._id,
                 name: product.name,
@@ -36,14 +37,32 @@ export default function ProductCard({ product }: ProductCardProps) {
                 mt: 8,
                 pt: 10,
                 textAlign: 'center',
-                cursor: product.availableQuantity > 0 ? 'pointer' : 'not-allowed',
-                opacity: product.availableQuantity > 0 ? 1 : 0.6,
+                cursor: isAvailable ? 'pointer' : 'not-allowed',
+                opacity: isAvailable ? 1 : 0.6,
                 transition: 'transform 0.2s',
                 '&:hover': {
-                    transform: product.availableQuantity > 0 ? 'scale(1.02)' : 'none',
+                    transform: isAvailable ? 'scale(1.02)' : 'none',
                 },
             }}
         >
+            {/* Unavailable Badge */}
+            {!isAvailable && (
+                <Chip
+                    label="Out of Stock"
+                    size="small"
+                    sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        backgroundColor: 'rgba(255, 124, 163, 0.2)',
+                        color: '#FF7CA3',
+                        fontWeight: 600,
+                        fontSize: '11px',
+                        height: '24px'
+                    }}
+                />
+            )}
+
             <Box
                 sx={{
                     position: 'absolute',
@@ -74,8 +93,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <Typography variant="body2" sx={{ color: '#FFF', mb: 1 }}>
                     $ {product.price}
                 </Typography>
-                <Typography variant="body2" sx={{ color: COLORS.text.secondary }}>
-                    {product.availableQuantity} Bowls available
+                <Typography variant="body2" sx={{ color: isAvailable ? COLORS.text.secondary : '#FF7CA3' }}>
+                    {isAvailable ? `${product.availableQuantity} Bowls available` : 'Unavailable'}
                 </Typography>
             </CardContent>
         </Card>

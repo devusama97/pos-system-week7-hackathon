@@ -7,7 +7,11 @@ const RawMaterialSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     unit: { type: String, required: true },
     quantity: { type: Number, required: true, default: 0 },
-    minStockLevel: { type: Number, default: 0 }
+    minStockLevel: { type: Number, default: 0 },
+    // Soft delete fields
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date, default: null },
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
 }, { timestamps: true });
 
 const RecipeItemSchema = new mongoose.Schema({
@@ -20,7 +24,11 @@ const ProductSchema = new mongoose.Schema({
     price: { type: Number, required: true, min: 0 },
     recipe: { type: [RecipeItemSchema], required: true },
     category: { type: String, required: true, default: 'Hot Dishes' },
-    image: { type: String }
+    image: { type: String },
+    // Availability tracking
+    isAvailable: { type: Boolean, default: true },
+    unavailableReason: { type: String, default: null },
+    isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 const RawMaterial = mongoose.model('RawMaterial', RawMaterialSchema);

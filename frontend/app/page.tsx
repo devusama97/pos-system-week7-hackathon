@@ -162,22 +162,23 @@ export default function POSPage() {
       {showPayment && <PaymentView onBack={() => setShowPayment(false)} defaultOrderType={orderType} />}
 
       {/* Mobile Cart Toggle FAB */}
-      <Box sx={{ position: 'fixed', bottom: 20, right: 20, display: { lg: 'none' }, zIndex: 1100 }}>
-        <IconButton
-          onClick={() => setMobileCartOpen(true)}
-          sx={{
-            backgroundColor: COLORS.primary,
-            color: '#FFF',
-            width: 56,
-            height: 56,
-            boxShadow: 4,
-            '&:hover': { backgroundColor: '#D6635D' }
-          }}
-        >
-          <Storefront />
-          {/* Note: Storefront is already imported, maybe use ShoppingCart if available, or just Storefront for now */}
-        </IconButton>
-      </Box>
+      {!mobileCartOpen && (
+        <Box sx={{ position: 'fixed', bottom: 90, right: 20, display: { lg: 'none' }, zIndex: 1300 }}>
+          <IconButton
+            onClick={() => setMobileCartOpen(true)}
+            sx={{
+              backgroundColor: COLORS.primary,
+              color: '#FFF',
+              width: 56,
+              height: 56,
+              boxShadow: 4,
+              '&:hover': { backgroundColor: '#D6635D' }
+            }}
+          >
+            <Storefront />
+          </IconButton>
+        </Box>
+      )}
     </MainLayout>
   );
 }

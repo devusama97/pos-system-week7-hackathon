@@ -39,8 +39,16 @@ export class ProductsService {
     }
 
     async findAll(): Promise<Product[]> {
-        const products = await this.productModel.find().populate('recipe.material').exec();
-        const rawMaterials = await this.rawMaterialModel.find().exec();
+        // Only return non-deleted products
+        const products = await this.productModel
+            .find({ isDeleted: false })
+            .populate('recipe.material')
+            .exec();
+
+        // Get only non-deleted materials
+        const rawMaterials = await this.rawMaterialModel
+            .find({ isDeleted: false })
+            .exec();
 
         return products.map(product => {
             const productObj = product.toObject();
@@ -50,12 +58,19 @@ export class ProductsService {
     }
 
     async findOne(id: string): Promise<any> {
-        const product = await this.productModel.findById(id).populate('recipe.material').exec();
+        const product = await this.productModel
+            .findOne({ _id: id, isDeleted: false })
+            .populate('recipe.material')
+            .exec();
+
         if (!product) {
             throw new NotFoundException(`Product with ID ${id} not found`);
         }
 
-        const rawMaterials = await this.rawMaterialModel.find().exec();
+        const rawMaterials = await this.rawMaterialModel
+            .find({ isDeleted: false })
+            .exec();
+
         const productObj = product.toObject();
         productObj.availableQuantity = this.calculateAvailability(product, rawMaterials);
 
@@ -71,7 +86,11 @@ export class ProductsService {
         }
 
         const updatedProduct = await this.productModel
-            .findByIdAndUpdate(id, updateData, { new: true })
+            .findOneAndUpdate(
+                { _id: id, isDeleted: false },
+                updateData,
+                { new: true }
+            )
             .exec();
 
         if (!updatedProduct) {
@@ -81,11 +100,19 @@ export class ProductsService {
     }
 
     async remove(id: string): Promise<any> {
-        const result = await this.productModel.findByIdAndDelete(id).exec();
-        if (!result) {
+        // Soft delete for products too
+        const product = await this.productModel.findById(id).exec();
+        if (!product) {
             throw new NotFoundException(`Product with ID ${id} not found`);
         }
-        return result;
+
+        product.isDeleted = true;
+        await product.save();
+
+        return {
+            success: true,
+            message: 'Product deleted successfully'
+        };
     }
 
     private calculateAvailability(product: any, rawMaterials: RawMaterialDocument[]): number {
@@ -95,8 +122,9 @@ export class ProductsService {
             const materialId = item.material._id ? item.material._id.toString() : item.material.toString();
             const material = rawMaterials.find(m => m._id.toString() === materialId);
 
-            if (!material) {
-                return 0; // Material missing, product cannot be made
+            // Check if material exists and is not deleted
+            if (!material || material.isDeleted) {
+                return 0; // Material missing or deleted, product cannot be made
             }
 
             const possibleUnits = Math.floor(material.quantity / item.quantity);
@@ -106,5 +134,66 @@ export class ProductsService {
         }
 
         return minAvailability === Infinity ? 0 : minAvailability;
+    }
+
+    // New method to check product availability with detailed info
+    async checkAvailability(productId: string): Promise<{
+        available: boolean;
+        reason?: string;
+        maxQuantity?: number;
+        missingMaterials?: string[];
+    }> {
+        const product = await this.productModel
+            .findOne({ _id: productId, isDeleted: false })
+            .populate('recipe.material')
+            .exec();
+
+        if (!product) {
+            return { available: false, reason: 'Product not found' };
+        }
+
+        if (!product.isAvailable) {
+            return {
+                available: false,
+                reason: product.unavailableReason || 'Product unavailable'
+            };
+        }
+
+        const missingMaterials: string[] = [];
+        let minQuantity = Infinity;
+
+        for (const item of product.recipe) {
+            const material = item.material as any;
+
+            if (!material || material.isDeleted) {
+                missingMaterials.push(material?.name || 'Unknown material');
+                continue;
+            }
+
+            const possibleUnits = Math.floor(material.quantity / item.quantity);
+            if (possibleUnits < minQuantity) {
+                minQuantity = possibleUnits;
+            }
+        }
+
+        if (missingMaterials.length > 0) {
+            return {
+                available: false,
+                reason: `Missing ingredients: ${missingMaterials.join(', ')}`,
+                missingMaterials
+            };
+        }
+
+        if (minQuantity === 0) {
+            return {
+                available: false,
+                reason: 'Insufficient ingredients'
+            };
+        }
+
+        return {
+            available: true,
+            maxQuantity: minQuantity === Infinity ? 0 : minQuantity
+        };
     }
 }

@@ -195,86 +195,109 @@ export default function ProductsManagementView() {
                     </Grid>
 
                     {/* Product Cards */}
-                    {filteredProducts.map((product, index) => (
-                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={product._id || index}>
-                            <Paper
-                                sx={{
-                                    backgroundColor: COLORS.background,
-                                    borderRadius: '8px',
-                                    border: `1px solid ${COLORS.divider}`,
-                                    overflow: 'hidden',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    pt: 3,
-                                    position: 'relative',
-                                    transition: 'all 0.3s ease',
-                                    '&:hover': { borderColor: COLORS.primary }
-                                }}
-                            >
-                                <Box
-                                    component="img"
-                                    src={product.image || 'https://placehold.co/150'}
+                    {filteredProducts.map((product, index) => {
+                        const isAvailable = (product.availableQuantity || 0) > 0;
+                        return (
+                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={product._id || index}>
+                                <Paper
                                     sx={{
-                                        width: '150px',
-                                        height: '150px',
-                                        borderRadius: '50%',
-                                        mb: 2,
-                                        objectFit: 'cover'
-                                    }}
-                                />
-                                <Typography
-                                    variant="body1"
-                                    align="center"
-                                    sx={{
-                                        color: '#FFF',
-                                        px: 2,
-                                        mb: 1,
-                                        fontWeight: 500,
-                                        fontSize: '14px',
-                                        lineHeight: 1.3,
-                                        height: '36px',
+                                        backgroundColor: COLORS.background,
+                                        borderRadius: '8px',
+                                        border: `1px solid ${isAvailable ? COLORS.divider : COLORS.error}`,
                                         overflow: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        pt: 3,
+                                        position: 'relative',
+                                        transition: 'all 0.3s ease',
+                                        opacity: isAvailable ? 1 : 0.8,
+                                        '&:hover': { borderColor: isAvailable ? COLORS.primary : COLORS.error }
                                     }}
                                 >
-                                    {product.name}
-                                </Typography>
-                                <Typography variant="body2" align="center" sx={{ color: COLORS.text.secondary, mb: 3, fontSize: '14px' }}>
-                                    $ {product.price} • {product.availableQuantity || 0} Bowls
-                                </Typography>
-                                <Box sx={{ display: 'flex', width: '100%' }}>
-                                    <Button
-                                        fullWidth
-                                        onClick={() => handleEdit(product)}
-                                        startIcon={<EditOutlined sx={{ fontSize: '18px' }} />}
+                                    {!isAvailable && (
+                                        <Box
+                                            sx={{
+                                                position: 'absolute',
+                                                top: 10,
+                                                right: 10,
+                                                backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                                                color: COLORS.error,
+                                                fontSize: '10px',
+                                                fontWeight: 700,
+                                                px: 1,
+                                                py: 0.5,
+                                                borderRadius: '4px'
+                                            }}
+                                        >
+                                            UNAVAILABLE
+                                        </Box>
+                                    )}
+                                    <Box
+                                        component="img"
+                                        src={product.image || 'https://placehold.co/150'}
                                         sx={{
-                                            py: 1.5,
-                                            backgroundColor: 'rgba(234, 115, 109, 0.2)',
-                                            color: COLORS.primary,
-                                            textTransform: 'none',
-                                            borderRadius: 0,
+                                            width: '150px',
+                                            height: '150px',
+                                            borderRadius: '50%',
+                                            mb: 2,
+                                            objectFit: 'cover',
+                                            filter: isAvailable ? 'none' : 'grayscale(100%)'
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body1"
+                                        align="center"
+                                        sx={{
+                                            color: '#FFF',
+                                            px: 2,
+                                            mb: 1,
+                                            fontWeight: 500,
                                             fontSize: '14px',
-                                            fontWeight: 600,
-                                            '&:hover': { backgroundColor: 'rgba(234, 115, 109, 0.3)' }
+                                            lineHeight: 1.3,
+                                            height: '36px',
+                                            overflow: 'hidden',
                                         }}
                                     >
-                                        Edit
-                                    </Button>
-                                    <IconButton
-                                        onClick={() => handleDelete(product._id)}
-                                        sx={{
-                                            borderRadius: 0,
-                                            backgroundColor: 'rgba(255, 124, 163, 0.1)',
-                                            color: COLORS.error,
-                                            '&:hover': { backgroundColor: 'rgba(255, 124, 163, 0.2)' }
-                                        }}
-                                    >
-                                        <DeleteOutline />
-                                    </IconButton>
-                                </Box>
-                            </Paper>
-                        </Grid>
-                    ))}
+                                        {product.name}
+                                    </Typography>
+                                    <Typography variant="body2" align="center" sx={{ color: isAvailable ? COLORS.text.secondary : COLORS.error, mb: 3, fontSize: '14px' }}>
+                                        $ {product.price} • {isAvailable ? `${product.availableQuantity} Bowls` : 'Out of Stock'}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', width: '100%' }}>
+                                        <Button
+                                            fullWidth
+                                            onClick={() => handleEdit(product)}
+                                            startIcon={<EditOutlined sx={{ fontSize: '18px' }} />}
+                                            sx={{
+                                                py: 1.5,
+                                                backgroundColor: 'rgba(234, 115, 109, 0.2)',
+                                                color: COLORS.primary,
+                                                textTransform: 'none',
+                                                borderRadius: 0,
+                                                fontSize: '14px',
+                                                fontWeight: 600,
+                                                '&:hover': { backgroundColor: 'rgba(234, 115, 109, 0.3)' }
+                                            }}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <IconButton
+                                            onClick={() => handleDelete(product._id)}
+                                            sx={{
+                                                borderRadius: 0,
+                                                backgroundColor: 'rgba(255, 124, 163, 0.1)',
+                                                color: COLORS.error,
+                                                '&:hover': { backgroundColor: 'rgba(255, 124, 163, 0.2)' }
+                                            }}
+                                        >
+                                            <DeleteOutline />
+                                        </IconButton>
+                                    </Box>
+                                </Paper>
+                            </Grid>
+                        );
+                    })}
                 </Grid>
             </Box>
 

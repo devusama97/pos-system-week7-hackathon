@@ -91,12 +91,33 @@ export default function RawMaterialsView() {
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm('Are you sure you want to delete this material?')) {
-            try {
-                await deleteMaterial(id).unwrap();
-            } catch (err) {
-                console.error('Failed to delete material:', err);
+        try {
+            // First check dependencies
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+            const response = await fetch(`${baseUrl}/raw-materials/${id}`, {
+                method: 'DELETE',
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                if (result.affectedProducts > 0) {
+                    alert(
+                        `Material deleted successfully.\n\n` +
+                        `Warning: ${result.affectedProducts} product(s) have been marked as unavailable:\n` +
+                        result.affectedProductNames.join(', ')
+                    );
+                } else {
+                    alert('Material deleted successfully.');
+                }
+                // Refetch materials
+                window.location.reload();
+            } else {
+                alert(`Error: ${result.message}`);
             }
+        } catch (err) {
+            console.error('Failed to delete material:', err);
+            alert('Failed to delete material. Please try again.');
         }
     };
 

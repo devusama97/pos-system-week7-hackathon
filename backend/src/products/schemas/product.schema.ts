@@ -32,6 +32,16 @@ export class Product {
     @Prop()
     image: string; // Cloudinary URL
 
+    // Availability tracking
+    @Prop({ default: true })
+    isAvailable: boolean;
+
+    @Prop({ type: String, default: null })
+    unavailableReason: string;
+
+    @Prop({ default: false })
+    isDeleted: boolean;
+
     // This will be a virtual or calculated field in the service
     availableQuantity?: number;
 }
