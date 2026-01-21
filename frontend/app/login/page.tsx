@@ -19,8 +19,14 @@ export default function LoginPage() {
         e.preventDefault();
         try {
             const result = await login({ email, password }).unwrap();
+            
+            // Set token in cookie for middleware
+            document.cookie = `token=${result.access_token}; path=/; max-age=86400`;
+            
+            // Update Redux state
+            dispatch({ type: 'auth/setCredentials', payload: { user: result.user, token: result.access_token } });
+            
             dispatch(baseApi.util.resetApiState());
-            localStorage.setItem('token', result.access_token);
             router.push('/');
         } catch (err) {
             console.error('Login failed:', err);

@@ -10,7 +10,7 @@ import {
     Storefront,
 } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { COLORS } from '../theme/colors';
 import { useGetProfileQuery } from '../store/apis/authApi';
 import { baseApi } from '../store/apis/baseApi';
@@ -25,14 +25,28 @@ export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const dispatch = useDispatch();
-    const { data: user } = useGetProfileQuery();
+    // Only call profile API if user is authenticated
+    const { data: user } = useGetProfileQuery(undefined, {
+        skip: !useSelector((state: any) => state.auth.isAuthenticated)
+    });
 
     // Auth disabled: Show all items
     const filteredNavItems = navItems;
 
     const handleLogout = () => {
+        // Clear Redux state
+        dispatch({ type: 'auth/logout' });
+        
+        // Clear API cache
         dispatch(baseApi.util.resetApiState());
+        
+        // Clear localStorage
         localStorage.removeItem('token');
+        
+        // Clear cookies
+        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        
+        // Redirect to login
         router.push('/login');
     };
 
