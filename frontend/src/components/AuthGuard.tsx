@@ -1,8 +1,25 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-    // Auth system disabled for demo task
+    const router = useRouter();
+    const pathname = usePathname();
+    const { token } = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        if (!token && pathname !== '/login') {
+            router.push('/login');
+        }
+    }, [token, pathname, router]);
+
+    // Show loading or redirect logic
+    if (!token && pathname !== '/login') {
+        return null;
+    }
+
     return <>{children}</>;
 }
